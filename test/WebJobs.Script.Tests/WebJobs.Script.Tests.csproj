@@ -31,6 +31,10 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Compile Remove="Middleware\ExceptionMiddlewareTests.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
     <None Include="Description\DotNet\TestFiles\PackageReferences\ProjectWithLockMatch\function.proj">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
@@ -43,6 +47,7 @@
     <None Include="Description\DotNet\TestFiles\PackageReferences\ProjectWithoutLock\function.proj">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Include="Middleware\ExceptionMiddlewareTests.cs" />
   </ItemGroup>
 
   <ItemGroup>

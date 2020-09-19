@@ -1,9 +1,9 @@
 ﻿// Copyright (c) .NET Foundation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 
-using System.IO;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Azure.WebJobs.Script.Extensions;
 using Microsoft.Azure.WebJobs.Script.WebHost.Extensions;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -57,6 +57,11 @@ namespace Microsoft.Azure.WebJobs.Script.WebHost.Middleware
             {
                 await httpContext.SetOfflineResponseAsync(_applicationHostOptions.CurrentValue.ScriptPath);
             }
+        }
+
+        public static bool ShouldUse(HttpContext context, IScriptHostManager scriptHostManager)
+        {
+            return !context.Request.IsAdminRequest() && (scriptHostManager.State == ScriptHostState.Offline || !scriptHostManager.CanInvoke());
         }
     }
 }

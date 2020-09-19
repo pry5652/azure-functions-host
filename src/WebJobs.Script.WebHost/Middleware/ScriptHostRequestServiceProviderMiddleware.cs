@@ -23,7 +23,6 @@ namespace Microsoft.Azure.WebJobs.Script.WebHost.Middleware
             if (manager.Services is IServiceScopeFactory scopedServiceProvider)
             {
                 var features = httpContext.Features;
-                var servicesFeature = features.Get<IServiceProvidersFeature>();
                 features.Set<IServiceProvidersFeature>(new RequestServicesFeature(httpContext, scopedServiceProvider));
             }
 

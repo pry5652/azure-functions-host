@@ -32,6 +32,11 @@
     <WarningsAsErrors />
   </PropertyGroup>
   <ItemGroup>
+    <Compile Remove="Middleware\ExceptionMiddleware.cs" />
+    <Compile Remove="Middleware\HostAvailabilityCheckMiddleware.cs" />
+    <Compile Remove="Middleware\PlaceholderSpecializationMiddleware.cs" />
+  </ItemGroup>
+  <ItemGroup>
     <Content Remove="Resources\Functions\host.json" />
     <Content Remove="Resources\Functions\proxies.json" />
     <Content Remove="Resources\Functions\WarmUp\function.json" />
@@ -90,6 +95,12 @@
     <EmbeddedResource Include="Resources\Functions\proxies.json" />
     <EmbeddedResource Include="Resources\Functions\WarmUp\function.json" />
     <EmbeddedResource Include="Resources\Functions\WarmUp\run.csx" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="Middleware\ExceptionMiddleware.cs" />
+    <None Include="Middleware\HostAvailabilityCheckMiddleware.cs" />
+    <None Include="Middleware\PlaceholderSpecializationMiddleware.cs" />
   </ItemGroup>
 
   <ItemGroup>

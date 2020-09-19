@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Azure.WebJobs.Extensions.Http;
 using Microsoft.Azure.WebJobs.Script.Diagnostics;
+using Microsoft.Azure.WebJobs.Script.Extensions;
 using Microsoft.Azure.WebJobs.Script.Scale;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -28,9 +29,9 @@ namespace Microsoft.Azure.WebJobs.Script.WebHost.Middleware
             _logger = loggerFactory?.CreateLogger("Host." + ScriptConstants.TraceSourceHttpThrottleMiddleware);
         }
 
-        public static bool ShouldEnable(HttpOptions options)
+        public static bool ShouldUse(HttpContext context, HttpOptions options)
         {
-            return HttpRequestQueue.IsEnabled(options) || options.DynamicThrottlesEnabled;
+            return !context.Request.IsAdminRequest() && (HttpRequestQueue.IsEnabled(options) || options.DynamicThrottlesEnabled);
         }
 
         public async Task Invoke(HttpContext httpContext, IOptions<HttpOptions> httpOptions, HttpRequestQueue requestQueue, HostPerformanceManager performanceManager, IMetricsLogger metricsLogger)
