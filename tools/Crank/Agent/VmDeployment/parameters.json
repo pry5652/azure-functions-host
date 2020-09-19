@@ -1,0 +1,24 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "vmName": {
+            "value": "functions-crank-test"
+        },
+        "adminUsername": {
+            "value": "Functions"
+        },
+        "authenticationType": {
+            "value": "sshPublicKey"
+        },
+        "adminPasswordOrKey": {
+            "value": null
+        },
+        "dnsLabelPrefix": {
+            "value": "[toLower(concat('functions-crank-test-', uniqueString(resourceGroup().id)))]"
+        },
+        "VmSize": {
+            "value": "Standard_E2s_v3"
+        }
+    }
+}
