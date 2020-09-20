@@ -30,11 +30,11 @@ $sshPublicKey = Get-AzKeyVaultSecret -VaultName 'functions-crank-kv' -Name 'Linu
 
 New-AzResourceGroupDeployment -ResourceGroupName $ResourceGroupName -TemplateFile .\template.json `
     -TemplateParameterObject @{
-        vmName = 'functions-crank-test'
+        vmName = $VmName
         adminUserName = 'Functions'
         authenticationType = 'sshPublicKey'
         adminPasswordOrKey = $sshPublicKey
-        dnsLabelPrefix = 'functions-crank-test'
+        dnsLabelPrefix = $VmName
         location = $Location
         VmSize = 'Standard_E2s_v3'
     }
