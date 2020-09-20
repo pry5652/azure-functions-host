@@ -34,6 +34,5 @@ New-AzResourceGroupDeployment -ResourceGroupName $ResourceGroupName -TemplateFil
         authenticationType = 'sshPublicKey'
         adminPasswordOrKey = $sshPublicKey
         dnsLabelPrefix = $VmName
-        location = $Location
         VmSize = 'Standard_E2s_v3'
     }
