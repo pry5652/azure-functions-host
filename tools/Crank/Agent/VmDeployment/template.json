@@ -219,7 +219,8 @@
                         "createOption": "fromImage",
                         "managedDisk": {
                             "storageAccountType": "[variables('osDiskType')]"
-                        }
+                        },
+                        "diskSizeGB": 128
                     },
                     "imageReference": {
                         "publisher": "Canonical",
