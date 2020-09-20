@@ -25,8 +25,7 @@ Set-AzContext -Subscription $SubscriptionName | Out-Null
 New-AzResourceGroup -Name $ResourceGroupName -Location $Location | Out-Null
 
 $sshPublicKey = Get-AzKeyVaultSecret -VaultName 'functions-crank-kv' -Name 'LinuxCrankAgentVmSshKey-Public' |
-                    ForEach-Object SecretValue |
-                    ConvertFrom-SecureString -AsPlainText
+                    ForEach-Object SecretValue
 
 New-AzResourceGroupDeployment -ResourceGroupName $ResourceGroupName -TemplateFile .\template.json `
     -TemplateParameterObject @{
