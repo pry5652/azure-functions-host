@@ -24,15 +24,19 @@ Set-AzContext -Subscription $SubscriptionName | Out-Null
 
 New-AzResourceGroup -Name $ResourceGroupName -Location $Location | Out-Null
 
-$sshPublicKey = Get-AzKeyVaultSecret -VaultName 'functions-crank-kv' -Name 'LinuxCrankAgentVmSshKey-Public' |
-                    ForEach-Object SecretValue
+$vaultSubscriptionId = (Get-AzSubscription -SubscriptionName 'Antares-Demo').Id
 
-New-AzResourceGroupDeployment -ResourceGroupName $ResourceGroupName -TemplateFile .\template.json `
+New-AzResourceGroupDeployment `
+    -ResourceGroupName $ResourceGroupName `
+    -TemplateFile .\template.json `
     -TemplateParameterObject @{
         vmName = $VmName
-        adminUserName = 'Functions'
-        authenticationType = 'sshPublicKey'
-        adminPasswordOrKey = $sshPublicKey
         dnsLabelPrefix = $VmName
         VmSize = 'Standard_E2s_v3'
+        adminUsername = 'Functions'
+        authenticationType = 'sshPublicKey'
+        vaultName = 'functions-crank-kv'
+        vaultResourceGroupName = 'FunctionsCrank'
+        vaultSubscription = $vaultSubscriptionId
+        secretName = 'LinuxCrankAgentVmSshKey-Public'
     }
