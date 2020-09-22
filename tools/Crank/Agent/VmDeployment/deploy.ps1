@@ -15,6 +15,9 @@ param (
     $VmName,
 
     [string]
+    $VmSize = 'Standard_E2s_v3',
+
+    [string]
     $Location = 'West Central US'
 )
 
@@ -32,7 +35,7 @@ New-AzResourceGroupDeployment `
     -TemplateParameterObject @{
         vmName = $VmName
         dnsLabelPrefix = $VmName
-        VmSize = 'Standard_E2s_v3'
+        VmSize = $VmSize
         adminUsername = 'Functions'
         authenticationType = 'sshPublicKey'
         vaultName = 'functions-crank-kv'
