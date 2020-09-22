@@ -11,6 +11,7 @@ using Microsoft.Azure.KeyVault;
 using Microsoft.Azure.KeyVault.Models;
 using Microsoft.Azure.Services.AppAuthentication;
 using Microsoft.Azure.WebJobs.Script.IO;
+using Microsoft.CodeAnalysis;
 using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Clients.ActiveDirectory;
 using Microsoft.Rest.Azure;
@@ -68,17 +69,23 @@ namespace Microsoft.Azure.WebJobs.Script.WebHost
             Dictionary<string, string> dictionary = GetDictionaryFromScriptSecrets(secrets, functionName);
 
             // Delete existing keys
-            string prefix = (type == ScriptSecretsType.Host) ? HostPrefix : FunctionPrefix + Normalize(functionName);
+            List<IPage<SecretItem>> secretsPages = await GetSecretsPagesAsync();
             List<Task> deleteTasks = new List<Task>();
-            foreach (SecretItem item in await _keyVaultClient.Value.GetSecretsAsync(GetVaultBaseUrl()))
+            string prefix = (type == ScriptSecretsType.Host) ? HostPrefix : FunctionPrefix + Normalize(functionName);
+
+            foreach (SecretItem item in FindSecrets(secretsPages, x => x.Identifier.Name.StartsWith(prefix)))
             {
-                // Delete only keys which are no longer exist in passed secrets
-                if (item.Identifier.Name.StartsWith(prefix) && !dictionary.Keys.Contains(item.Identifier.Name))
+                // Delete only keys which no longer exist in passed-in secrets
+                if (!dictionary.Keys.Contains(item.Identifier.Name))
                 {
                     deleteTasks.Add(_keyVaultClient.Value.DeleteSecretAsync(GetVaultBaseUrl(), item.Identifier.Name));
                 }
             }
-            await Task.WhenAll(deleteTasks);
+
+            if (deleteTasks.Any())
+            {
+                await Task.WhenAll(deleteTasks);
+            }
 
             // Set new secrets
             List<Task> setTasks = new List<Task>();
@@ -112,14 +119,14 @@ namespace Microsoft.Azure.WebJobs.Script.WebHost
 
         private async Task<ScriptSecrets> ReadHostSecrets()
         {
-            IPage<SecretItem> secretItems = await _keyVaultClient.Value.GetSecretsAsync(GetVaultBaseUrl());
+            List<IPage<SecretItem>> secretsPages = await GetSecretsPagesAsync();
             List<Task<SecretBundle>> tasks = new List<Task<SecretBundle>>();
 
             // Add master key task
-            SecretItem masterItem = secretItems.FirstOrDefault(x => x.Identifier.Name.StartsWith(MasterKey));
-            if (masterItem != null)
+            List<SecretItem> masterItems = FindSecrets(secretsPages, x => x.Identifier.Name.StartsWith(MasterKey));
+            if (masterItems.Count > 0)
             {
-                tasks.Add(_keyVaultClient.Value.GetSecretAsync(GetVaultBaseUrl(), masterItem.Identifier.Name));
+                tasks.Add(_keyVaultClient.Value.GetSecretAsync(GetVaultBaseUrl(), masterItems[0].Identifier.Name));
             }
             else
             {
@@ -127,13 +134,13 @@ namespace Microsoft.Azure.WebJobs.Script.WebHost
             }
 
             // Add functionKey tasks
-            foreach (SecretItem item in secretItems.Where(x => x.Identifier.Name.StartsWith(FunctionKeyPrefix)))
+            foreach (SecretItem item in FindSecrets(secretsPages, x => x.Identifier.Name.StartsWith(FunctionKeyPrefix)))
             {
                 tasks.Add(_keyVaultClient.Value.GetSecretAsync(GetVaultBaseUrl(), item.Identifier.Name));
             }
 
             // Add systemKey tasks
-            foreach (SecretItem item in secretItems.Where(x => x.Identifier.Name.StartsWith(SystemKeyPrefix)))
+            foreach (SecretItem item in FindSecrets(secretsPages, x => x.Identifier.Name.StartsWith(SystemKeyPrefix)))
             {
                 tasks.Add(_keyVaultClient.Value.GetSecretAsync(GetVaultBaseUrl(), item.Identifier.Name));
             }
@@ -168,13 +175,15 @@ namespace Microsoft.Azure.WebJobs.Script.WebHost
 
         private async Task<ScriptSecrets> ReadFunctionSecrets(string functionName)
         {
-            IPage<SecretItem> secretItems = await _keyVaultClient.Value.GetSecretsAsync(GetVaultBaseUrl());
+            List<IPage<SecretItem>> secretsPages = await GetSecretsPagesAsync();
             List<Task<SecretBundle>> tasks = new List<Task<SecretBundle>>();
             string prefix = $"{FunctionPrefix}{Normalize(functionName)}--";
-            foreach (SecretItem item in secretItems.Where(x => x.Identifier.Name.StartsWith(prefix, StringComparison.OrdinalIgnoreCase)))
+
+            foreach (SecretItem item in FindSecrets(secretsPages, x => x.Identifier.Name.StartsWith(prefix, StringComparison.OrdinalIgnoreCase)))
             {
                 tasks.Add(_keyVaultClient.Value.GetSecretAsync(GetVaultBaseUrl(), item.Identifier.Name));
             }
+
             if (!tasks.Any())
             {
                 return null;
@@ -193,6 +202,40 @@ namespace Microsoft.Azure.WebJobs.Script.WebHost
             }
 
             return functionSecrets;
+        }
+
+        private async Task<List<IPage<SecretItem>>> GetSecretsPagesAsync()
+        {
+            IPage<SecretItem> secretItems = await _keyVaultClient.Value.GetSecretsAsync(GetVaultBaseUrl());
+            List<IPage<SecretItem>> secretsPages = new List<IPage<SecretItem>>() { secretItems };
+
+            while (!string.IsNullOrEmpty(secretItems.NextPageLink))
+            {
+                secretItems = await _keyVaultClient.Value.GetSecretsNextAsync(secretItems.NextPageLink);
+                secretsPages.Add(secretItems);
+            }
+
+            return secretsPages;
+        }
+
+        private List<SecretItem> FindSecrets(List<IPage<SecretItem>> secretsPages, Func<SecretItem, bool> comparison = null)
+        {
+            // if no comparison is provided, every item is a match
+            if (comparison == null)
+            {
+                comparison = x => true;
+            }
+
+            var secretItems = new List<SecretItem>();
+            foreach (IPage<SecretItem> secretsPage in secretsPages)
+            {
+                foreach (SecretItem secretItem in secretsPage.Where(x => comparison(x)))
+                {
+                    secretItems.Add(secretItem);
+                }
+            }
+
+            return secretItems;
         }
 
         private string GetVaultBaseUrl()
