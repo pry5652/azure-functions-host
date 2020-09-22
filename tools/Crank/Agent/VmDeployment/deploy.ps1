@@ -8,10 +8,6 @@ param (
 
     [Parameter(Mandatory = $true)]
     [string]
-    $ResourceGroupName,
-
-    [Parameter(Mandatory = $true)]
-    [string]
     $VmName,
 
     [string]
@@ -23,14 +19,16 @@ param (
 
 $ErrorActionPreference = 'Stop'
 
+$resourceGroupName = "FunctionsCrank-$VmName"
+
 Set-AzContext -Subscription $SubscriptionName | Out-Null
 
-New-AzResourceGroup -Name $ResourceGroupName -Location $Location | Out-Null
+New-AzResourceGroup -Name $resourceGroupName -Location $Location | Out-Null
 
 $vaultSubscriptionId = (Get-AzSubscription -SubscriptionName 'Antares-Demo').Id
 
 New-AzResourceGroupDeployment `
-    -ResourceGroupName $ResourceGroupName `
+    -ResourceGroupName $resourceGroupName `
     -TemplateFile .\template.json `
     -TemplateParameterObject @{
         vmName = $VmName
