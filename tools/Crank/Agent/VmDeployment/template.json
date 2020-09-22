@@ -33,7 +33,7 @@
                 "description": "Unique DNS Name for the Public IP used to access the Virtual Machine."
             }
         },
-        "VmSize": {
+        "vmSize": {
             "type": "string",
             "defaultValue": "Standard_B2s",
             "metadata": {

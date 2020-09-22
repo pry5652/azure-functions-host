@@ -35,7 +35,7 @@ New-AzResourceGroupDeployment `
     -TemplateParameterObject @{
         vmName = $VmName
         dnsLabelPrefix = $VmName
-        VmSize = $VmSize
+        vmSize = $VmSize
         adminUsername = 'Functions'
         authenticationType = 'sshPublicKey'
         vaultName = 'functions-crank-kv'
