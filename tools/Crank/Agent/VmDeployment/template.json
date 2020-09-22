@@ -70,7 +70,7 @@
         {
             "type": "Microsoft.Resources/deployments",
             "apiVersion": "2018-05-01",
-            "name": "dynamicSecret",
+            "name": "crankVmDeployment",
             "properties": {
                 "mode": "Incremental",
                 "expressionEvaluationOptions": {
@@ -367,5 +367,17 @@
         }
     ],
     "outputs": {
+        "adminUsername": {
+            "type": "string",
+            "value": "[reference('crankVmDeployment').outputs.adminUsername.value]"
+        },
+        "hostname": {
+            "type": "string",
+            "value": "[reference('crankVmDeployment').outputs.hostname.value]"
+        },
+        "sshCommand": {
+            "type": "string",
+            "value": "[reference('crankVmDeployment').outputs.sshCommand.value]"
+        }
     }
 }
