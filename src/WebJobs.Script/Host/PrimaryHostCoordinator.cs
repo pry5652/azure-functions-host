@@ -141,6 +141,7 @@ namespace Microsoft.Azure.WebJobs.Script
                 {
                     // We didn't have the lease and failed to acquire it. Common if somebody else already has it.
                     // This is normal and does not warrant any logging.
+                    _logger.LogInformation($"Failed to acquire lease on LockName: '{lockName}', instanceId:'{_websiteInstanceId}', proposedLeaseId:'{proposedLeaseId}', Timeout:'{_leaseTimeout.TotalMilliseconds}'");
                     return;
                 }
 
