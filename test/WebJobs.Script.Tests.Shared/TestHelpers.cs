@@ -72,6 +72,19 @@ namespace Microsoft.Azure.WebJobs.Script.Tests
                     .ToArray());
         }
 
+        public static async Task RetryOnFailure(Func<Task> taskToRetry, TimeSpan retryInterval, int numberOfRetries)
+        {
+            try
+            {
+                await taskToRetry();
+            }
+            catch when (numberOfRetries > 1)
+            {
+                await Task.Delay(retryInterval);
+                await RetryOnFailure(taskToRetry, retryInterval, --numberOfRetries);
+            }
+        }
+
         public static Task Await(Func<bool> condition, int timeout = 30 * 1000, int pollingInterval = 50, bool throwWhenDebugging = false, Func<string> userMessageCallback = null)
         {
             return Await(() => Task.FromResult(condition()), timeout, pollingInterval, throwWhenDebugging, userMessageCallback);

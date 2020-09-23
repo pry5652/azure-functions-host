@@ -238,56 +238,7 @@ namespace Microsoft.Azure.WebJobs.Script.Tests.ApplicationInsights
         [Fact(Skip = "Disabled due to https://github.com/Azure/azure-functions-host/issues/6521")]
         public async Task Validate_HostLogs()
         {
-            // Validate the host startup traces. Order by message string as the requests may come in
-            // slightly out-of-order or on different threads
-            TraceTelemetry[] traces = null;
-            string routesManagerLogCategory = typeof(WebHost.WebScriptHostHttpRoutesManager).FullName;
-
-            await TestHelpers.Await(() =>
-            {
-                traces = _fixture.Channel.Telemetries
-                    .OfType<TraceTelemetry>()
-                    .Where(t =>
-                    {
-                        string category = t.Properties[LogConstants.CategoryNameKey].ToString();
-                        return category.StartsWith("Host.") || category.StartsWith(routesManagerLogCategory);
-                    })
-                    .OrderBy(t => t.Message)
-                    .ToArray();
-
-                // When these two messages are logged, we know we've completed initialization.
-                return traces
-                .Where(t => t.Message.Contains("Host lock lease acquired by instance ID") || t.Message.Contains("Job host started"))
-                .Count() == 2;
-            }, userMessageCallback: () => string.Join(Environment.NewLine, _fixture.Channel.Telemetries.OfType<TraceTelemetry>().Select(t => t.Message)));
-
-            // Excluding Node buffer deprecation warning for now
-            // TODO: Remove this once the issue https://github.com/Azure/azure-functions-nodejs-worker/issues/98 is resolved
-            // We may have any number of "Host Status" calls as we wait for startup. Let's ignore them.
-            traces = traces.Where(t =>
-                !t.Message.Contains("[DEP0005]") &&
-                !t.Message.StartsWith("Host Status")
-            ).ToArray();
-
-            int expectedCount = 14;
-            Assert.True(traces.Length == expectedCount, $"Expected {expectedCount} messages, but found {traces.Length}. Actual logs:{Environment.NewLine}{string.Join(Environment.NewLine, traces.Select(t => t.Message))}");
-
-            int idx = 0;
-            ValidateTrace(traces[idx++], "2 functions loaded", LogCategories.Startup);
-            ValidateTrace(traces[idx++], "A function allow list has been specified", LogCategories.Startup);
-            ValidateTrace(traces[idx++], "Found the following functions:\r\n", LogCategories.Startup);
-            ValidateTrace(traces[idx++], "Generating 2 job function(s)", LogCategories.Startup);
-            ValidateTrace(traces[idx++], "Host initialization: ConsecutiveErrors=0, StartupCount=1", LogCategories.Startup);
-            ValidateTrace(traces[idx++], "Host initialized (", LogCategories.Startup);
-            ValidateTrace(traces[idx++], "Host lock lease acquired by instance ID", ScriptConstants.LogCategoryHostGeneral);
-            ValidateTrace(traces[idx++], "Host started (", LogCategories.Startup);
-            ValidateTrace(traces[idx++], "Initializing function HTTP routes" + Environment.NewLine
-                + "Mapped function route 'api/HttpTrigger-Scenarios'", routesManagerLogCategory);
-            ValidateTrace(traces[idx++], "Initializing Host", LogCategories.Startup);
-            ValidateTrace(traces[idx++], "Initializing Warmup Extension", LogCategories.CreateTriggerCategory("Warmup"));
-            ValidateTrace(traces[idx++], "Job host started", LogCategories.Startup);
-            ValidateTrace(traces[idx++], "Loading functions metadata", LogCategories.Startup);
-            ValidateTrace(traces[idx++], "Starting Host (HostId=", LogCategories.Startup);
+            await TestHelpers.RetryOnFailure(Validate_HostLogs_Test, TimeSpan.FromSeconds(10), 3);
         }
 
         [Fact]
@@ -457,6 +408,60 @@ namespace Microsoft.Azure.WebJobs.Script.Tests.ApplicationInsights
         {
             telemetry.Properties.TryGetValue(LogConstants.InvocationIdKey, out string id);
             return id;
+        }
+
+        private async Task Validate_HostLogs_Test()
+        {
+            // Validate the host startup traces. Order by message string as the requests may come in
+            // slightly out-of-order or on different threads
+            TraceTelemetry[] traces = null;
+            string routesManagerLogCategory = typeof(WebHost.WebScriptHostHttpRoutesManager).FullName;
+
+            await TestHelpers.Await(() =>
+            {
+                traces = _fixture.Channel.Telemetries
+                    .OfType<TraceTelemetry>()
+                    .Where(t =>
+                    {
+                        string category = t.Properties[LogConstants.CategoryNameKey].ToString();
+                        return category.StartsWith("Host.") || category.StartsWith(routesManagerLogCategory);
+                    })
+                    .OrderBy(t => t.Message)
+                    .ToArray();
+
+                // When these two messages are logged, we know we've completed initialization.
+                return traces
+                .Where(t => t.Message.Contains("Host lock lease acquired by instance ID") || t.Message.Contains("Job host started"))
+                .Count() == 2;
+            }, timeout: 60000, userMessageCallback: () => string.Join(Environment.NewLine, _fixture.Channel.Telemetries.OfType<TraceTelemetry>().Select(t => t.Message)));
+
+            // Excluding Node buffer deprecation warning for now
+            // TODO: Remove this once the issue https://github.com/Azure/azure-functions-nodejs-worker/issues/98 is resolved
+            // We may have any number of "Host Status" calls as we wait for startup. Let's ignore them.
+            traces = traces.Where(t =>
+                !t.Message.Contains("[DEP0005]") &&
+                !t.Message.StartsWith("Host Status")
+            ).ToArray();
+
+            int expectedCount = 14;
+            Assert.True(traces.Length == expectedCount, $"Expected {expectedCount} messages, but found {traces.Length}. Actual logs:{Environment.NewLine}{string.Join(Environment.NewLine, traces.Select(t => t.Message))}");
+
+            int idx = 0;
+            ValidateTrace(traces[idx++], "2 functions loaded", LogCategories.Startup);
+            ValidateTrace(traces[idx++], "A function allow list has been specified", LogCategories.Startup);
+            ValidateTrace(traces[idx++], "Found the following functions:\r\n", LogCategories.Startup);
+            ValidateTrace(traces[idx++], "Generating 2 job function(s)", LogCategories.Startup);
+            ValidateTrace(traces[idx++], "Host initialization: ConsecutiveErrors=0, StartupCount=1", LogCategories.Startup);
+            ValidateTrace(traces[idx++], "Host initialized (", LogCategories.Startup);
+            ValidateTrace(traces[idx++], "Host lock lease acquired by instance ID", ScriptConstants.LogCategoryHostGeneral);
+            ValidateTrace(traces[idx++], "Host started (", LogCategories.Startup);
+            ValidateTrace(traces[idx++], "Initializing function HTTP routes" + Environment.NewLine
+                + "Mapped function route 'api/HttpTrigger-Scenarios'", routesManagerLogCategory);
+            ValidateTrace(traces[idx++], "Initializing Host", LogCategories.Startup);
+            ValidateTrace(traces[idx++], "Initializing Warmup Extension", LogCategories.CreateTriggerCategory("Warmup"));
+            ValidateTrace(traces[idx++], "Job host started", LogCategories.Startup);
+            ValidateTrace(traces[idx++], "Loading functions metadata", LogCategories.Startup);
+            ValidateTrace(traces[idx++], "Starting Host (HostId=", LogCategories.Startup);
         }
     }
 }
