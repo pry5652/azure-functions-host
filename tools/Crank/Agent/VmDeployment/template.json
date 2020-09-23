@@ -333,9 +333,9 @@
                                 "autoUpgradeMinorVersion": true,
                                 "protectedSettings": {
                                     "fileUris": [
-                                        "https://raw.githubusercontent.com/Azure/azure-functions-host/dev/tools/Crank/install-powershell.sh"
+                                        "https://raw.githubusercontent.com/Azure/azure-functions-host/dev/tools/Crank/Agent/bootstrap.sh"
                                     ],
-                                    "commandToExecute": "./install-powershell.sh"
+                                    "commandToExecute": "./bootstrap.sh"
                                 },
                                 "publisher": "Microsoft.Azure.Extensions",
                                 "type": "CustomScript",
