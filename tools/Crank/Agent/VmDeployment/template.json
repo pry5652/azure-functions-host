@@ -321,6 +321,28 @@
                                     "linuxConfiguration": "[if(equals(parameters('authenticationType'), 'password'), json('null'), variables('linuxConfiguration'))]"
                                 }
                             }
+                        },
+                        {
+                            "apiVersion": "2019-12-01",
+                            "dependsOn": [
+                                "[parameters('vmName')]"
+                            ],
+                            "location": "[parameters('location')]",
+                            "name": "[concat(parameters('vmName'), '/custom-script')]",
+                            "properties": {
+                                "autoUpgradeMinorVersion": true,
+                                "protectedSettings": {
+                                    "fileUris": [
+                                        "https://raw.githubusercontent.com/Azure/azure-functions-host/dev/tools/Crank/install-powershell.sh"
+                                    ],
+                                    "commandToExecute": "./install-powershell.sh"
+                                },
+                                "publisher": "Microsoft.Azure.Extensions",
+                                "type": "CustomScript",
+                                "typeHandlerVersion": "2.1"
+                            },
+                            "tags": {},
+                            "type": "Microsoft.Compute/virtualMachines/extensions"
                         }
                     ],
                     "outputs": {
