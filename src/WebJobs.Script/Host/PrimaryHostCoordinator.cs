@@ -145,8 +145,6 @@ namespace Microsoft.Azure.WebJobs.Script
                     return;
                 }
 
-                _logger.LogInformation($"Acquired lease on LockName: '{lockName}', instanceId:'{_websiteInstanceId}', proposedLeaseId:'{proposedLeaseId}', Timeout:'{_leaseTimeout.TotalMilliseconds}'");
-
                 _lastRenewal = DateTime.UtcNow;
                 _lastRenewalLatency = _lastRenewal - requestStart;
 
