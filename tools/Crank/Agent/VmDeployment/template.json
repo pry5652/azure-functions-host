@@ -235,6 +235,19 @@
                                             "destinationAddressPrefix": "*",
                                             "destinationPortRange": "22"
                                         }
+                                    },
+                                    {
+                                        "name": "DotNet-Crank",
+                                        "properties": {
+                                            "priority": 1011,
+                                            "protocol": "*",
+                                            "access": "Allow",
+                                            "direction": "Inbound",
+                                            "sourcePortRange": "*",
+                                            "sourceAddressPrefix": "*",
+                                            "destinationPortRange": "5010",
+                                            "destinationAddressPrefix": "*"
+                                        }
                                     }
                                 ]
                             }
