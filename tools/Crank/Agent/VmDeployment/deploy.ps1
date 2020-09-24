@@ -55,3 +55,6 @@ New-AzResourceGroupDeployment `
         vaultSubscription = $vaultSubscriptionId
         secretName = 'LinuxCrankAgentVmSshKey-Public'
     }
+
+Write-Verbose 'Waiting for VM restart...'
+Start-Sleep -Seconds 90
