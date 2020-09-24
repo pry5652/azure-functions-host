@@ -10,6 +10,10 @@ param (
     [string]
     $BaseName,
 
+    [Parameter(Mandatory = $true)]
+    [ValidateSet('Linux', 'Windows')]
+    $OsType,
+
     [string]
     $VmSize = 'Standard_E2s_v3',
 
@@ -22,13 +26,17 @@ param (
 
 $ErrorActionPreference = 'Stop'
 
-$resourceGroupName = "FunctionsCrank-$BaseName"
+if ($OsType -ne 'Linux') {
+    throw 'Only Linux is supported now'
+}
+
+$resourceGroupName = "FunctionsCrank-$OsType-$BaseName"
 
 Set-AzContext -Subscription $SubscriptionName | Out-Null
 
 New-AzResourceGroup -Name $resourceGroupName -Location $Location | Out-Null
 
-$vmName = "functions-crank-$BaseName"
+$vmName = "functions-crank-$OsType-$BaseName"
 $vaultSubscriptionId = (Get-AzSubscription -SubscriptionName 'Antares-Demo').Id
 
 New-AzResourceGroupDeployment `
