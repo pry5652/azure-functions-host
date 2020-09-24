@@ -129,7 +129,7 @@
                                 "description": "Location for all resources."
                             }
                         },
-                        "VmSize": {
+                        "vmSize": {
                             "type": "string",
                              "metadata": {
                                 "description": "The size of the VM"
@@ -299,7 +299,7 @@
                             ],
                             "properties": {
                                 "hardwareProfile": {
-                                    "vmSize": "[parameters('VmSize')]"
+                                    "vmSize": "[parameters('vmSize')]"
                                 },
                                 "storageProfile": {
                                     "osDisk": {
@@ -382,8 +382,8 @@
                     "dnsLabelPrefix": {
                         "value": "[parameters('dnsLabelPrefix')]"
                     },
-                    "VmSize": {
-                        "value": "[parameters('VmSize')]"
+                    "vmSize": {
+                        "value": "[parameters('vmSize')]"
                     },
                     "osDiskType": {
                         "value": "[parameters('osDiskType')]"
