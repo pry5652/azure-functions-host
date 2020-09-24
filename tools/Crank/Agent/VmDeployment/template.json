@@ -239,10 +239,10 @@
                                             "protocol": "*",
                                             "access": "Allow",
                                             "direction": "Inbound",
-                                            "sourcePortRange": "*",
                                             "sourceAddressPrefix": "*",
-                                            "destinationPortRange": "5010",
-                                            "destinationAddressPrefix": "*"
+                                            "sourcePortRange": "*",
+                                            "destinationAddressPrefix": "*",
+                                            "destinationPortRange": "5010"
                                         }
                                     }
                                 ]
