@@ -8,4 +8,4 @@ git checkout anatolib/crank-agent-setup
 
 cd tools/Crank/Agent
 ./install-powershell.sh
-./setup-crank-agent.ps1 -CrankBranch dev
+sudo -H -u Functions ./setup-crank-agent.ps1 -CrankBranch dev
