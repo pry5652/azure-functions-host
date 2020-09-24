@@ -7,5 +7,5 @@ cd azure-functions-host
 git checkout anatolib/crank-agent-setup
 
 cd tools/Crank/Agent
-./install-powershell.sh
+Linux/install-powershell.sh
 sudo -H -u Functions ./setup-crank-agent.ps1 -CrankBranch master

@@ -342,7 +342,7 @@
                                 "autoUpgradeMinorVersion": true,
                                 "protectedSettings": {
                                     "fileUris": [
-                                        "https://raw.githubusercontent.com/Azure/azure-functions-host/anatolib/crank-agent-setup/tools/Crank/Agent/bootstrap.sh"
+                                        "https://raw.githubusercontent.com/Azure/azure-functions-host/anatolib/crank-agent-setup/tools/Crank/Agent/Linux/bootstrap.sh"
                                     ],
                                     "commandToExecute": "./bootstrap.sh"
                                 },
