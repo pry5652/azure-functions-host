@@ -36,6 +36,12 @@
                 "description": "The size of the VM"
             }
         },
+        "osDiskType": {
+            "type": "string",
+            "metadata": {
+                "description": "The OS disk type."
+            }
+        },
         "vaultName": {
             "type": "string",
             "metadata": {
@@ -129,6 +135,12 @@
                                 "description": "The size of the VM"
                             }
                         },
+                        "osDiskType": {
+                            "type": "string",
+                            "metadata": {
+                                "description": "The OS disk type."
+                            }
+                        },
                         "virtualNetworkName": {
                             "type": "string",
                             "defaultValue": "vNet",
@@ -155,7 +167,6 @@
                         "publicIpAddressName": "[concat(parameters('vmName'), 'PublicIP' )]",
                         "networkInterfaceName": "[concat(parameters('vmName'),'NetInt')]",
                         "subnetRef": "[resourceId('Microsoft.Network/virtualNetworks/subnets', parameters('virtualNetworkName'), parameters('subnetName'))]",
-                        "osDiskType": "Premium_LRS",
                         "subnetAddressPrefix": "10.1.0.0/24",
                         "addressPrefix": "10.1.0.0/16",
                         "linuxConfiguration": {
@@ -294,7 +305,7 @@
                                     "osDisk": {
                                         "createOption": "fromImage",
                                         "managedDisk": {
-                                            "storageAccountType": "[variables('osDiskType')]"
+                                            "storageAccountType": "[parameters('osDiskType')]"
                                         },
                                         "diskSizeGB": 127
                                     },
@@ -373,6 +384,9 @@
                     },
                     "VmSize": {
                         "value": "[parameters('VmSize')]"
+                    },
+                    "osDiskType": {
+                        "value": "[parameters('osDiskType')]"
                     },
                     "adminPasswordOrKey": {
                         "reference": {

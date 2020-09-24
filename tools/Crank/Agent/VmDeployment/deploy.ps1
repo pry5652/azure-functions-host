@@ -14,6 +14,9 @@ param (
     $VmSize = 'Standard_E2s_v3',
 
     [string]
+    $OsDiskType = 'Premium_LRS',
+
+    [string]
     $Location = 'West Central US'
 )
 
@@ -35,6 +38,7 @@ New-AzResourceGroupDeployment `
         vmName = $vmName
         dnsLabelPrefix = $vmName
         vmSize = $VmSize
+        osDiskType = $OsDiskType
         adminUsername = 'Functions'
         authenticationType = 'sshPublicKey'
         vaultName = 'functions-crank-kv'
