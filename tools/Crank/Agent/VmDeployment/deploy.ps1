@@ -36,7 +36,7 @@ Set-AzContext -Subscription $SubscriptionName | Out-Null
 
 New-AzResourceGroup -Name $resourceGroupName -Location $Location | Out-Null
 
-$vmName = "functions-crank-$OsType-$BaseName"
+$vmName = "functions-crank-$OsType-$BaseName".ToLower()
 $vaultSubscriptionId = (Get-AzSubscription -SubscriptionName 'Antares-Demo').Id
 
 New-AzResourceGroupDeployment `
