@@ -11,5 +11,3 @@ chmod -R +x *.sh
 chmod -R +x *.ps1
 Linux/install-powershell.sh
 sudo -H -u Functions ./setup-crank-agent.ps1 -CrankBranch master
-
-echo "sudo reboot" | at now + 1 minute
