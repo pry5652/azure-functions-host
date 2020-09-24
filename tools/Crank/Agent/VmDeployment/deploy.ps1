@@ -56,6 +56,6 @@ New-AzResourceGroupDeployment `
         secretName = 'LinuxCrankAgentVmSshKey-Public'
     }
 
-Write-Verbose 'Restarting the VMc...'
-Restart-AzVM -ResourceGroupName $resourceGroupName -Name $vmName
+Write-Verbose 'Restarting the VM...'
+Restart-AzVM -ResourceGroupName $resourceGroupName -Name $vmName | Out-Null
 Start-Sleep -Seconds 30
