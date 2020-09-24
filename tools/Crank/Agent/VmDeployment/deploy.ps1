@@ -8,7 +8,7 @@ param (
 
     [Parameter(Mandatory = $true)]
     [string]
-    $VmName,
+    $BaseName,
 
     [string]
     $VmSize = 'Standard_E2s_v3',
@@ -19,20 +19,21 @@ param (
 
 $ErrorActionPreference = 'Stop'
 
-$resourceGroupName = "FunctionsCrank-$VmName"
+$resourceGroupName = "FunctionsCrank-$BaseName"
 
 Set-AzContext -Subscription $SubscriptionName | Out-Null
 
 New-AzResourceGroup -Name $resourceGroupName -Location $Location | Out-Null
 
+$vmName = "functions-crank-$BaseName"
 $vaultSubscriptionId = (Get-AzSubscription -SubscriptionName 'Antares-Demo').Id
 
 New-AzResourceGroupDeployment `
     -ResourceGroupName $resourceGroupName `
     -TemplateFile .\template.json `
     -TemplateParameterObject @{
-        vmName = $VmName
-        dnsLabelPrefix = $VmName
+        vmName = $vmName
+        dnsLabelPrefix = $vmName
         vmSize = $VmSize
         adminUsername = 'Functions'
         authenticationType = 'sshPublicKey'
