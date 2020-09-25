@@ -68,7 +68,7 @@ namespace Microsoft.Azure.WebJobs.Script.WebHost
             Dictionary<string, string> dictionary = GetDictionaryFromScriptSecrets(secrets, functionName);
 
             // Delete existing keys
-            List<IPage<SecretItem>> secretsPages = await GetSecretsPagesAsync();
+            List<IEnumerable<SecretItem>> secretsPages = await GetKeyVaultSecretsPagesAsync(_keyVaultClient.Value, GetVaultBaseUrl());
             List<Task> deleteTasks = new List<Task>();
             string prefix = (type == ScriptSecretsType.Host) ? HostPrefix : FunctionPrefix + Normalize(functionName);
 
@@ -118,7 +118,7 @@ namespace Microsoft.Azure.WebJobs.Script.WebHost
 
         private async Task<ScriptSecrets> ReadHostSecrets()
         {
-            List<IPage<SecretItem>> secretsPages = await GetSecretsPagesAsync();
+            List<IEnumerable<SecretItem>> secretsPages = await GetKeyVaultSecretsPagesAsync(_keyVaultClient.Value, GetVaultBaseUrl());
             List<Task<SecretBundle>> tasks = new List<Task<SecretBundle>>();
 
             // Add master key task
@@ -174,7 +174,7 @@ namespace Microsoft.Azure.WebJobs.Script.WebHost
 
         private async Task<ScriptSecrets> ReadFunctionSecrets(string functionName)
         {
-            List<IPage<SecretItem>> secretsPages = await GetSecretsPagesAsync();
+            List<IEnumerable<SecretItem>> secretsPages = await GetKeyVaultSecretsPagesAsync(_keyVaultClient.Value, GetVaultBaseUrl());
             List<Task<SecretBundle>> tasks = new List<Task<SecretBundle>>();
             string prefix = $"{FunctionPrefix}{Normalize(functionName)}--";
 
@@ -203,21 +203,21 @@ namespace Microsoft.Azure.WebJobs.Script.WebHost
             return functionSecrets;
         }
 
-        private async Task<List<IPage<SecretItem>>> GetSecretsPagesAsync()
+        public static async Task<List<IEnumerable<SecretItem>>> GetKeyVaultSecretsPagesAsync(KeyVaultClient keyVaultClient, string keyVaultBaseUrl)
         {
-            IPage<SecretItem> secretItems = await _keyVaultClient.Value.GetSecretsAsync(GetVaultBaseUrl());
-            List<IPage<SecretItem>> secretsPages = new List<IPage<SecretItem>>() { secretItems };
+            IPage<SecretItem> secretItems = await keyVaultClient.GetSecretsAsync(keyVaultBaseUrl);
+            List<IEnumerable<SecretItem>> secretsPages = new List<IEnumerable<SecretItem>>() { secretItems };
 
             while (!string.IsNullOrEmpty(secretItems.NextPageLink))
             {
-                secretItems = await _keyVaultClient.Value.GetSecretsNextAsync(secretItems.NextPageLink);
+                secretItems = await keyVaultClient.GetSecretsNextAsync(secretItems.NextPageLink);
                 secretsPages.Add(secretItems);
             }
 
             return secretsPages;
         }
 
-        private List<SecretItem> FindSecrets(List<IPage<SecretItem>> secretsPages, Func<SecretItem, bool> comparison = null)
+        public static List<SecretItem> FindSecrets(List<IEnumerable<SecretItem>> secretsPages, Func<SecretItem, bool> comparison = null)
         {
             // if no comparison is provided, every item is a match
             if (comparison == null)
@@ -226,7 +226,7 @@ namespace Microsoft.Azure.WebJobs.Script.WebHost
             }
 
             var secretItems = new List<SecretItem>();
-            foreach (IPage<SecretItem> secretsPage in secretsPages)
+            foreach (IEnumerable<SecretItem> secretsPage in secretsPages)
             {
                 foreach (SecretItem secretItem in secretsPage.Where(x => comparison(x)))
                 {
