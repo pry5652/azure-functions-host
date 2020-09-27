@@ -60,7 +60,9 @@ New-AzResourceGroupDeployment `
         customScriptParameters = @{
             CrankBranch = 'master'
             Docker = $Docker.IsPresent
-        } | ConvertTo-Json -Compress
+        } |
+        # Double-encode so that it can be passed as a command line argument
+        ConvertTo-Json -Compress | ConvertTo-Json
     }
 
 Write-Verbose 'Restarting the VM...'

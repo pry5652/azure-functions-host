@@ -356,7 +356,7 @@
                                     "fileUris": [
                                         "https://raw.githubusercontent.com/Azure/azure-functions-host/anatolib/crank-linux-container/tools/Crank/Agent/Linux/bootstrap.sh"
                                     ],
-                                    "commandToExecute": "[concat('sudo -H -u Functions ./bootstrap.sh \"', parameters('customScriptParameters'), '\"')]"
+                                    "commandToExecute": "[concat('sudo -H -u Functions ./bootstrap.sh ', parameters('customScriptParameters'))]"
                                 },
                                 "publisher": "Microsoft.Azure.Extensions",
                                 "type": "CustomScript",
