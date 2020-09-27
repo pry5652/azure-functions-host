@@ -1,5 +1,6 @@
 #!/bin/bash
 
+git config --global core.autocrlf input
 mkdir /home/Functions/github
 cd /home/Functions/github
 git clone https://github.com/Azure/azure-functions-host.git
