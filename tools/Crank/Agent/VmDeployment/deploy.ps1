@@ -45,7 +45,7 @@ $vaultSubscriptionId = (Get-AzSubscription -SubscriptionName 'Antares-Demo').Id
 
 New-AzResourceGroupDeployment `
     -ResourceGroupName $resourceGroupName `
-    -TemplateFile .\template.json `
+    -TemplateFile "$PSScriptRoot\template.json" `
     -TemplateParameterObject @{
         vmName = $vmName
         dnsLabelPrefix = $vmName
