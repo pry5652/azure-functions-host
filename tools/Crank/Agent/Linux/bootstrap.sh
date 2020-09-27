@@ -4,7 +4,7 @@ mkdir /home/Functions/github
 cd /home/Functions/github
 git clone https://github.com/Azure/azure-functions-host.git
 cd azure-functions-host
-git checkout dev
+git checkout anatolib/crank-linux-container
 
 cd tools/Crank/Agent
 chmod -R +x *.sh

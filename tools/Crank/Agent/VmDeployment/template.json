@@ -354,7 +354,7 @@
                                 "autoUpgradeMinorVersion": true,
                                 "protectedSettings": {
                                     "fileUris": [
-                                        "https://raw.githubusercontent.com/Azure/azure-functions-host/dev/tools/Crank/Agent/Linux/bootstrap.sh"
+                                        "https://raw.githubusercontent.com/Azure/azure-functions-host/anatolib/crank-linux-container/tools/Crank/Agent/Linux/bootstrap.sh"
                                     ],
                                     "commandToExecute": "[concat('./bootstrap.sh \"', parameters('customScriptParameters'), '\"')]"
                                 },
