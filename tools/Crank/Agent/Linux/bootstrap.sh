@@ -12,4 +12,4 @@ echo Updated bootstrap.sh
 sudo find . -name "*.sh" -exec sudo chmod +x {} \;
 sudo find . -name "*.ps1" -exec sudo chmod +x {} \;
 Linux/install-powershell.sh
-./setup-crank-agent-json.ps1 -ParametersJson $1
+sudo -H -u Functions ./setup-crank-agent-json.ps1 -ParametersJson $1
