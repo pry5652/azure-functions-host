@@ -151,10 +151,19 @@ function ScheduleCrankAgentStart {
     Write-Warning 'Please reboot to start crank-agent'
 }
 
+function InstallDocker {
+    if ($IsWindows) {
+        throw 'Using Docker on Windows is not supported yet'
+    } else {
+        & "$PSScriptRoot/Linux/install-docker.sh"
+    }
+}
+
 #endregion
 
 #region Main
 
+if ($Docker) { InstallDocker }
 if ($InstallDotNet) { InstallDotNet }
 if ($InstallCrankAgent) { InstallCrankAgent }
 ScheduleCrankAgentStart
