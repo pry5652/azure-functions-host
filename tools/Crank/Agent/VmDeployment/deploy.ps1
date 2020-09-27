@@ -14,6 +14,9 @@ param (
     [ValidateSet('Linux', 'Windows')]
     $OsType,
 
+    [switch]
+    $Docker,
+
     [string]
     $VmSize = 'Standard_E2s_v3',
 
@@ -54,6 +57,7 @@ New-AzResourceGroupDeployment `
         vaultResourceGroupName = 'FunctionsCrank'
         vaultSubscription = $vaultSubscriptionId
         secretName = 'LinuxCrankAgentVmSshKey-Public'
+        customScriptParameters = @{ Docker = $Docker.IsPresent } | ConvertTo-Json -Compress
     }
 
 Write-Verbose 'Restarting the VM...'
