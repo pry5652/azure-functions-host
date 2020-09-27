@@ -7,7 +7,7 @@ cd azure-functions-host
 git checkout anatolib/crank-linux-container
 
 cd tools/Crank/Agent
-chmod -R +x *.sh
-chmod -R +x *.ps1
+sudo find . -name "*.sh" -exec chmod +x {} \;
+sudo find . -name "*.ps1" -exec chmod +x {} \;
 Linux/install-powershell.sh
 sudo -H -u Functions ./setup-crank-agent-json.ps1 -ParametersJson $1
