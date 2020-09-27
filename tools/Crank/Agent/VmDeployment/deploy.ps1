@@ -57,7 +57,10 @@ New-AzResourceGroupDeployment `
         vaultResourceGroupName = 'FunctionsCrank'
         vaultSubscription = $vaultSubscriptionId
         secretName = 'LinuxCrankAgentVmSshKey-Public'
-        customScriptParameters = @{ Docker = $Docker.IsPresent } | ConvertTo-Json -Compress
+        customScriptParameters = @{
+            CrankBranch = 'master'
+            Docker = $Docker.IsPresent
+        } | ConvertTo-Json -Compress
     }
 
 Write-Verbose 'Restarting the VM...'

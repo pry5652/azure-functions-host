@@ -10,4 +10,4 @@ cd tools/Crank/Agent
 chmod -R +x *.sh
 chmod -R +x *.ps1
 Linux/install-powershell.sh
-sudo -H -u Functions ./setup-crank-agent.ps1 -CrankBranch master
+sudo -H -u Functions ./setup-crank-agent-json.ps1 -ParametersJson $1

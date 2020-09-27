@@ -4,7 +4,8 @@
 param (
     [bool]$InstallDotNet = $true,
     [bool]$InstallCrankAgent = $true,
-    [string]$CrankBranch
+    [string]$CrankBranch,
+    [bool]$Docker = $false
 )
 
 $ErrorActionPreference = 'Stop'
