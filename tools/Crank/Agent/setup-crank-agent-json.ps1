@@ -7,6 +7,7 @@ param (
 
 $ErrorActionPreference = 'Stop'
 
-$parameters = $ParametersJson | ConvertFrom-Json
+$parameters = @{}
+($ParametersJson | ConvertFrom-Json).PSObject.Properties | ForEach-Object { $parameters[$_.Name] = $_.Value }
 
 & "$PSScriptRoot/setup-crank-agent.ps1" @parameters
