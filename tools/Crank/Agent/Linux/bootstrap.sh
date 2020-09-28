@@ -20,4 +20,4 @@ sudo find . -name "*.ps1" -exec dos2unix {} \;
 Linux/install-powershell.sh
 
 echo --- Invoking setup-crank-agent-json.ps1 with parameters: $1
-./setup-crank-agent-json.ps1 -ParametersJson $1
+./setup-crank-agent-json.ps1 -ParametersJson $1 -Verbose
