@@ -153,6 +153,7 @@ function ScheduleCrankAgentStart {
 }
 
 function InstallDocker {
+    Write-Verbose 'Installing Docker...'
     if ($IsWindows) {
         throw 'Using Docker on Windows is not supported yet'
     } else {
