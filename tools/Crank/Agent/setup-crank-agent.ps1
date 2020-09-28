@@ -91,7 +91,7 @@ function InstallCrankAgent {
         } finally {
             Pop-Location
             Write-Verbose "Removing temporary directory: $($tempDir.FullName)"
-            Remove-Item $tempDir.FullName -Recurse -Force -ErrorAction Ignore
+            # Remove-Item $tempDir.FullName -Recurse -Force -ErrorAction Ignore
         }
     } else {
         InstallCrankAgentTool
