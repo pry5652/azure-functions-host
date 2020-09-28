@@ -55,6 +55,9 @@ namespace Microsoft.Azure.WebJobs.Script.WebHost.DependencyInjection
               }));
 
             var scope = new ServiceScope(resolver, scopedRoot);
+
+            scopedContext.UseInstance<IServiceProvider>(scope.ServiceProvider);
+
             ChildScopes.TryAdd(scope, null);
 
             scope.DisposalTask.ContinueWith(t => ChildScopes.TryRemove(scope, out object _));

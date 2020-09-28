@@ -3,7 +3,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.Text;
 using Microsoft.Azure.WebJobs.Script.WebHost.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection;
 using Xunit;
@@ -86,6 +85,57 @@ namespace Microsoft.Azure.WebJobs.Script.Tests.DependencyInjection
 
             // Disposing of the JobHost service provider should not dispose of root container services
             Assert.False(rootService.Disposed);
+        }
+
+        [Fact]
+        public void Scopes_ChildScopeIsIsolated()
+        {
+            var services = new ServiceCollection();
+            services.AddScoped<A>();
+
+            var rootScopeFactory = new WebHostServiceProvider(new ServiceCollection());
+            var jobHostProvider = new JobHostServiceProvider(services, rootScopeFactory, rootScopeFactory);
+
+            var a1 = jobHostProvider.GetService<A>();
+            jobHostProvider.CreateScope();
+            var a2 = jobHostProvider.GetService<A>();
+            Assert.NotNull(a1);
+            Assert.NotNull(a2);
+            Assert.Same(a1, a2);
+        }
+
+        [Fact]
+        public void Scopes_Factories()
+        {
+            IList<IServiceProvider> serviceProviders = new List<IServiceProvider>();
+
+            var services = new ServiceCollection();
+            services.AddTransient<A>(p =>
+            {
+                serviceProviders.Add(p);
+                return new A();
+            });
+
+            var rootScopeFactory = new WebHostServiceProvider(new ServiceCollection());
+            var jobHostProvider = new JobHostServiceProvider(services, rootScopeFactory, rootScopeFactory);
+
+            var scope1 = jobHostProvider.CreateScope();
+
+            // Call this twice. The IServiceProvider passed to the factory should be different because they are separate scopes.
+            scope1.ServiceProvider.GetService<A>();
+
+            var scope2 = jobHostProvider.CreateScope();
+            scope2.ServiceProvider.GetService<A>();
+
+            Assert.Equal(2, serviceProviders.Count);
+            Assert.NotSame(serviceProviders[0], serviceProviders[1]);
+        }
+
+        private class A
+        {
+            public A()
+            {
+            }
         }
 
         private class TestService : IService, IDisposable
