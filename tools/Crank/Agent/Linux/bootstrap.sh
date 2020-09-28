@@ -13,7 +13,7 @@ sudo find . -name "*.sh" -exec sudo chmod +xr {} \;
 sudo find . -name "*.ps1" -exec sudo chmod +xr {} \;
 
 sudo apt-get update
-sudo apt-get install dos2unix
+sudo apt-get install -y dos2unix
 sudo find . -name "*.sh" -exec dos2unix {} \;
 sudo find . -name "*.ps1" -exec dos2unix {} \;
 
