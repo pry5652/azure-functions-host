@@ -90,7 +90,7 @@ function InstallCrankAgent {
             InstallCrankAgentTool -LocalPackageSource $packagesDirectory
         } finally {
             Pop-Location
-            Write-Verbose "Removing temporary directory: $($tempDir.FullName)"
+            Write-Verbose "NOT removing temporary directory: $($tempDir.FullName)"
             # Remove-Item $tempDir.FullName -Recurse -Force -ErrorAction Ignore
         }
     } else {
