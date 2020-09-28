@@ -43,6 +43,11 @@ New-AzResourceGroup -Name $resourceGroupName -Location $Location | Out-Null
 
 $vaultSubscriptionId = (Get-AzSubscription -SubscriptionName 'Antares-Demo').Id
 
+$customScriptParameters = @{
+    CrankBranch = 'master'
+    Docker = $Docker.IsPresent
+}
+
 New-AzResourceGroupDeployment `
     -ResourceGroupName $resourceGroupName `
     -TemplateFile "$PSScriptRoot\template.json" `
@@ -57,12 +62,7 @@ New-AzResourceGroupDeployment `
         vaultResourceGroupName = 'FunctionsCrank'
         vaultSubscription = $vaultSubscriptionId
         secretName = 'LinuxCrankAgentVmSshKey-Public'
-        customScriptParameters = @{
-            CrankBranch = 'master'
-            Docker = $Docker.IsPresent
-        } |
-        # Double-encode so that it can be passed as a command line argument
-        ConvertTo-Json -Compress | ConvertTo-Json
+        customScriptParameters = $customScriptParameters | ConvertTo-Json -Compress
     }
 
 Write-Verbose 'Restarting the VM...'
