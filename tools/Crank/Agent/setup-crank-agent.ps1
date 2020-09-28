@@ -36,7 +36,7 @@ function BuildCrankAgent($BranchOrCommit) {
     Write-Verbose "Cloning crank repo..."
     git clone https://github.com/dotnet/crank.git > $null
     Set-Location crank
-    git checkout $BranchOrCommit
+    git checkout $BranchOrCommit > $null
 
     $logFileName = 'build.log'
     Write-Verbose "Building crank (see $(Join-Path -Path $PWD -ChildPath $logFileName))..."
