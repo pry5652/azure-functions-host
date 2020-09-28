@@ -76,6 +76,7 @@ function InstallCrankAgentTool($LocalPackageSource) {
         $installArgs += '--add-source', $LocalPackageSource
     }
 
+    Write-Verbose "Invoking dotnet with arguments: $installArgs"
     & dotnet $installArgs
 }
 
