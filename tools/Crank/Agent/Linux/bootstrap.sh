@@ -9,8 +9,8 @@ git checkout anatolib/crank-linux-container
 
 echo *** Fixing script files format and permissions
 cd tools/Crank/Agent
-sudo find . -name "*.sh" -exec sudo chmod +x {} \;
-sudo find . -name "*.ps1" -exec sudo chmod +x {} \;
+sudo find . -name "*.sh" -exec sudo chmod +xr {} \;
+sudo find . -name "*.ps1" -exec sudo chmod +xr {} \;
 
 sudo apt update
 sudo apt install dos2unix
