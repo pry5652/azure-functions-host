@@ -35,8 +35,8 @@ function New-TemporaryDirectory {
 function BuildCrankAgent($BranchOrCommit) {
     Write-Verbose "Cloning crank repo..."
     git clone https://github.com/dotnet/crank.git > $null
-    git checkout $BranchOrCommit
     Set-Location crank
+    git checkout $BranchOrCommit
 
     $logFileName = 'build.log'
     Write-Verbose "Building crank (see $(Join-Path -Path $PWD -ChildPath $logFileName))..."
