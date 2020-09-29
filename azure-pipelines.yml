@@ -36,24 +36,6 @@ jobs:
       filePath: '$(Build.Repository.LocalPath)\build\initialize-pipeline.ps1'
       arguments: '-connectionString ''$(Storage-azurefunctionshostci0)'''
 
-  - pwsh: |
-      $sourcePath  = (ls $(Build.Repository.LocalPath)/packages/Microsoft.Azure.WebJobs.Script.WebHost*.nupkg).FullName
-      if (-not (test-path $sourcePath))
-      {
-        throw 'Unable to find Microsoft.Azure.WebJobs.Script.WebHost*.nupkg at ./package'
-      }
-      Copy-Item -Path $sourcePath -Destination $(Build.ArtifactStagingDirectory) -ErrorAction Stop -Verbose -Force
-    condition: eq(variables['RUNBUILDFORINTEGRATIONTESTS'], 'True')
-    displayName: 'Copy package to ArtifactStagingDirectory'
-  - task: NuGetCommand@2
-    condition: eq(variables['RUNBUILDFORINTEGRATIONTESTS'], 'True')
-    inputs:
-      command: 'push'
-      packagesToPush: '$(Build.ArtifactStagingDirectory)/**/*.nupkg;!$(Build.ArtifactStagingDirectory)/**/*.symbols.nupkg'
-      nuGetFeedType: 'internal'
-      publishVstsFeed: 'e6a70c92-4128-439f-8012-382fe78d6396/f37f760c-aebd-443e-9714-ce725cd427df'
-      allowPackageConflicts: true
-
 - job: BuildArtifacts
   dependsOn: InitializePipeline
   condition: and(succeeded(), or(ne(variables['Build.Reason'], 'PullRequest'), eq(dependencies.InitializePipeline.outputs['Initialize.BuildArtifacts'], true)))
@@ -94,6 +76,26 @@ jobs:
         **\WebJobs.Script.csproj
         **\WebJobs.Script.WebHost.csproj
         **\WebJobs.Script.Grpc.csproj
+  
+  - pwsh: |
+      $sourcePath  = (ls $(Build.Repository.LocalPath)/packages/Microsoft.Azure.WebJobs.Script.WebHost*.nupkg).FullName
+      if (-not (test-path $sourcePath))
+      {
+        throw 'Unable to find Microsoft.Azure.WebJobs.Script.WebHost*.nupkg at ./package'
+      }
+      Copy-Item -Path $sourcePath -Destination $(Build.ArtifactStagingDirectory) -ErrorAction Stop -Verbose -Force
+    condition: eq(variables['RUNBUILDFORINTEGRATIONTESTS'], 'True')
+    displayName: 'Copy package to ArtifactStagingDirectory'
+    
+  - task: NuGetCommand@2
+    condition: eq(variables['RUNBUILDFORINTEGRATIONTESTS'], 'True')
+    inputs:
+      command: 'push'
+      packagesToPush: '$(Build.ArtifactStagingDirectory)/**/*.nupkg;!$(Build.ArtifactStagingDirectory)/**/*.symbols.nupkg'
+      nuGetFeedType: 'internal'
+      publishVstsFeed: 'e6a70c92-4128-439f-8012-382fe78d6396/f37f760c-aebd-443e-9714-ce725cd427df'
+      allowPackageConflicts: true
+ 
   - task: DotNetCoreCLI@2
     displayName: 'Build performance package'
     inputs:
